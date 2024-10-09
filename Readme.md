@@ -1,70 +1,62 @@
-# Relatório de Lógica e Insights para o Projeto FatPig
+# Lógica e Insights do Relatório do Projeto FatPig
 
-**Autores**: Cadu e Emanuel  
+**Autores**: Cadu e Emanuel 
 **Data**: Outubro de 2024
 
 ---
 
-### 1. **Estrutura do Banco de Dados**
+### 1. **Banco de Dados de Arquitetura**
 
-Neste relatório, apresentamos a estrutura do banco de dados que projetamos para o gerenciamento de clientes, produtos, vendas e logs do sistema. Abaixo estão as principais entidades e seus relacionamentos:
+O banco de dados foi estruturado a partir das exigências para o gerenciamento dos clientes, produtos, vendas e logs do sistema. A seguir, são apresentadas as definições das principais entidades e seus relacionamentos:
 
-- **Clientes**: Cada cliente possui um identificador único (ID_Cliente), além de nome, email, telefone e endereço. A data de cadastro dos clientes é registrada, permitindo o controle do tempo de relacionamento com a empresa.
-  
-- **Produtos**: Esta tabela armazena informações sobre os produtos disponíveis para venda, como nome, preço, categoria e quantidade em estoque. A relação com a tabela ItensVenda possibilita que o estoque seja atualizado automaticamente a cada venda.
+- **Clientes**: Para cada cliente há um identificador único (ID_Cliente), nome, email, telefone e endereço. Os clientes são cadastrados juntamente com a data do cadastro existente, permitindo-nos ter o controle do tempo de relacionamento da empresa do cliente.
+ 
+- **Produtos**: Contém as informações relativas aos produtos que estão disponíveis para vendas, correspondendo ao nome, preço e categoria e quantidade em estoque. A relação direta com a tabela ItensVenda permite controlar o estoque sempre que algum produto for vendido. 
 
-- **Vendas**: Cada venda é registrada com um identificador único e referencia o cliente que a realizou. A tabela contém a data e o valor total da venda, que pode ser ajustado por descontos aplicáveis a clientes fidelizados.
+- **Vendas**: Cada venda é registrada com um identificador único, mapeada para o cliente que fez a compra. A venda tem a data e o total, que podem ser alterados pela lógica de desconto de clientes fidelizados.
 
-- **ItensVenda**: Esta tabela atua como uma tabela associativa, armazenando os produtos vendidos em cada transação, juntamente com a quantidade e o preço unitário. Isso facilita a análise detalhada de cada venda.
+- **ItensVenda**: Trabalha como uma tabela associativa que armazena os produtos vendidos em cada venda, além da quantidade e preço unitário. Ela conecta as vendas aos produtos, permitindo uma análise detalhada de uma venda.
 
-- **Logs**: A tabela de logs registra informações de auditoria de vendas, incluindo o momento em que a venda foi realizada e uma descrição do evento.
+- **Logs**: Armazena informações de auditoria de vendas, como o momento que a venda foi realizada e uma descrição do evento.
 
-Os principais relacionamentos são:
-- **Clientes - Vendas**: Um cliente pode realizar várias vendas ao longo do tempo (relação um-para-muitos).
-- **Vendas - Produtos (via ItensVenda)**: Uma venda pode incluir vários produtos, e um produto pode aparecer em várias vendas (relação muitos-para-muitos).
+As principais relações são: 
+- **Clientes - vendas**: Um cliente pode fazer várias vendas ao longo do tempo (relação um-para-muitos).
+- **Vendas - Produtos (vía ItensVenda)**: Uma venda pode conter vários produtos e um produto pode estar em várias vendas (relação Muitos-para-muitos).
 
 ---
 
 ### 2. **Triggers**
 
-Implementamos dois triggers para otimizar o gerenciamento do sistema de vendas:
+Dois triggers foram implementados para melhorar a gestão do sistema de vendas: 
 
 1. **Trigger AtualizaEstoque**:
-   - Esse trigger é acionado automaticamente após a inserção de um item na tabela **ItensVenda**, atualizando o estoque do produto correspondente ao subtrair a quantidade vendida. Isso garante a atualização consistente do estoque, evitando vendas de produtos fora de estoque.
+ - O trigger encontra-se programado para se ativar automaticamente após o registro de um item na tabela **ItensVenda**. O destino do seu comportamento é atualizar o estoque do produto, mediante a subtração da respectiva quantidade de itens vendidos. Essa aplicação garante que o estoque esteja sempre apenas atualizado e certo, evitando problemas como vendas de itens que não estão mais no estoque do sistema.
 
 2. **Trigger RegistraLogVenda**:
-   - Acionado após a inserção de uma nova venda na tabela **Vendas**, esse trigger insere automaticamente um registro na tabela **Logs**, documentando o evento da venda. Essa prática facilita a auditoria e o monitoramento de todas as transações, proporcionando maior transparência nas operações.
+ - O trigger é gerado após o registro de uma nova venda na tabela **Vendas**, colocando automaticamente um log na tabela **Logs**, que registra a venda. Essa ação facilita as auditorias e monitorações de todas as vendas que foram realizadas, dando uma maior transparência aos negócios realizados.
 
 ---
 
 ### 3. **Procedure: AplicaDesconto**
 
-Desenvolvemos a procedure **AplicaDesconto** com o objetivo de fidelizar os clientes que fazem compras recorrentes. A lógica dessa procedure verifica quantas compras o cliente já realizou; se o total for maior ou igual a 10, um desconto de 5% é aplicado na próxima compra realizada no mesmo dia. 
+Em busca de fidelizar clientes que conferem compras recorrentes, foi realizada a procedure **AplicaDesconto**. O comportamento assegurou que a lógica da procedure verificasse quantas compras um cliente já realizou, e, ocorrendo o número total de compras igual ou maior que 10, aplicasse um desconto de 5% na próxima compra deste cliente, desde que fosse realizada no mesmo dia.
 
-Esse mecanismo não só incentiva a continuidade das compras, mas também recompensa a lealdade dos clientes, fortalecendo o relacionamento com a empresa.
+Esse mecanismo não só ajuda a manter os clientes em um ciclo de compras, como também insere uma recompensa pela lealdade, fortalecendo uma relação com os clientes, que se veem obrigados a retornar.
 
 ---
 
 ### 4. **Insights Baseados nas Consultas de Relatórios**
 
-A seguir, apresentamos alguns insights obtidos através das consultas realizadas no banco de dados:
+A seguir são disponibilizados alguns insights obtidos com a execução das consultas no banco de dados:
 
-- **Relatório de vendas no ano de 2023**:
-  - Ao calcular o total de vendas realizadas em 2023, notamos que a empresa teve um desempenho positivo, gerando um montante significativo. Isso oferece uma visão clara do volume de transações e possibilita uma análise detalhada do fluxo de caixa anual.
+- **Relatório de vendas de 2023**:
+ - Quando calculamos o montante total de vendas que ocorreram este ano, observamos que a empresa obteve um valor robusto, demonstrando um bom desempenho em vendas nesse ano, ao longo do ano. Possibilita uma visão mais clara do volume de transações e da análise do fluxo de caixa anuais.
 
-- **Média de gastos por cliente**:
-  - A consulta que calcula a média de gastos por cliente fornece informações valiosas sobre o perfil de consumo. Identificar clientes que gastam acima da média pode abrir oportunidades para ações promocionais e estratégias de retenção.
+- **Média de gastos (por cliente)**:
+ - A consulta de calcular a média de gastos por cliente traz conselhos importantes sobre o perfil de consumo da base de clientes. Identificar clientes que estão acima da média de gastos poderá gerar oportunidades para encontrar uma promoção específica ou estratégias de retenção. 
 
-- **Quantidade de vendas por produto**:
-  - Identificar quais produtos foram mais vendidos permite que a empresa ajuste seu estoque conforme a demanda. Produtos com vendas consistentes podem ter o estoque aumentado, enquanto aqueles com menor desempenho podem ser analisados para promoções.
+- **Volume de vendas, por produto**:
+ - O que a empresa pode fazer ao reconhecer quais produtos são mais representativos nas vendas e ajusta seu estoque em função da demanda. Para produtos que têm venda consolidadas, pode aumentar seu stock. Para produtos com desempenho mais fraco, pode ser ou promovido ou retirado.
 
-- **Total vendido por categoria e produto**:
-  - Essa análise ajuda a identificar as categorias de produtos mais populares e os produtos mais vendidos dentro delas. A ordenação por quantidade vendida fornece uma visão clara dos produtos mais lucrativos, permitindo ajustes nas estratégias de marketing e vendas.
-
----
-
-### 5. **Conclusão**
-
-A estrutura do banco de dados, juntamente com os triggers, procedures e consultas otimizadas, garante um sistema eficiente e escalável. As lógicas implementadas não só automatizam processos como atualização de estoque e registro de vendas, mas também oferecem insights valiosos que podem orientar decisões estratégicas para o futuro da empresa.
-
-Cadu e Emanuel
+- **Valor total vendido, por categoria e produto**:
+ - Essa análise possibilitará à empresa informá-la das categorias de produtos mais bem-sucedidas e quais produtos mais representaram vendas em cada categoria para a empresa e a empresa consegue ter uma lista de produtos mais atraentes para o estoque, em função da venda. Quando a empresa realiza a ordenação, em unidades vendidas, da horas da determinação dos produtos que apresentam melhores resultados, para o ajuste de marketing e vendas.
